@@ -1,22 +1,33 @@
-### 介紹  
-做完Tatinic之後，我一樣選擇適合初學者的 Digit Recognizer 作為練習。  
-這個競賽的目標是透過 手寫數字影像資料，建立一個分類模型，來預測每個圖像代表的數字（0-9）  
-一樣會看到兩個csv，Train跟Test  
+# Kaggle 實作分享：Digit Recognizer
 
-以下是我解題的步驟：  
-1.讀取資料  
-2.資料視覺化  
-3.資料愈處理  
-4.資料集切分  
-5.模型選擇並訓練  
-6.模型驗證  
-7.模型預測  
+## 介紹
 
-### 步驟  
+在完成 **Titanic 生存預測** 後，我選擇了另一個適合初學者的 Kaggle 比賽 —— **Digit Recognizer** 作為練習題目。  
+此比賽的目標是透過手寫數字影像資料，建立一個分類模型，來預測每個圖像代表的數字（0-9）。  
+比賽提供了兩個 CSV 文件：
+- **Train.csv**：訓練資料集，用於模型的學習與訓練。
+- **Test.csv**：測試資料集，用於模型的預測與提交。
 
-一樣是先讀取資料  
+以下是我解題的完整步驟：
+1. 讀取資料  
+2. 資料視覺化  
+3. 資料預處理  
+4. 資料集切分  
+5. 模型選擇並訓練  
+6. 模型驗證  
+7. 模型預測  
+
+---
+
+## 解題步驟
+
+### **1. 讀取資料**
+使用 Pandas 讀取比賽提供的資料集：
+
+```python
 train = pd.read_csv(r'C:\Users\User\OneDrive\桌面\Py\Pandas\digit-recognizer\train.csv')  
 test = pd.read_csv(r'C:\Users\User\OneDrive\桌面\Py\Pandas\digit-recognizer\test.csv')  
+
 
 在機器學習中，理解數據的結構很重要！我們可以將其中一個樣本視覺化，來直觀地了解資料內容  
 
