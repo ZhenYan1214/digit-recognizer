@@ -28,50 +28,96 @@
 train = pd.read_csv(r'C:\Users\User\OneDrive\桌面\Py\Pandas\digit-recognizer\train.csv')  
 test = pd.read_csv(r'C:\Users\User\OneDrive\桌面\Py\Pandas\digit-recognizer\test.csv')  
 
+## 2. 資料視覺化
 
-在機器學習中，理解數據的結構很重要！我們可以將其中一個樣本視覺化，來直觀地了解資料內容  
+在機器學習中，理解數據結構非常重要！這裡透過視覺化來直觀了解資料內容：
 
-image = train.iloc[0,1:].values  #0就是他的標籤，1:就是全部的特徵值  
-image = image.reshape(28,28)  #28x28是他的特徵值總數  
-plt.imshow(image, cmap='gray')  #我們將圖片用灰色呈現  
-plt.title(f'Label: {train.iloc[0,0]}')
-plt.show()  
+```python
+# 第 0 筆樣本的特徵值
+image = train.iloc[0, 1:].values  
+# 將資料轉換為 28x28 的圖片
+image = image.reshape(28, 28)     
+# 以灰階顯示
+plt.imshow(image, cmap='gray')   
+# 標籤
+plt.title(f'Label: {train.iloc[0, 0]}')  
+plt.show()
 
-跑出來就可以看到我們的數字了  
-然後一樣是進行我們的資料愈處理，將圖像資料進行標準化處理，將每個像素值縮放到 [0,1] 的範圍內  
+## 3. 資料預處理
 
-X_train = train.iloc[:, 1:] / 255.0  #從 [0,255] 壓縮到 [0,1]    
-y_train = train['label']  
-X_test = test / 255.0  #提高模型的訓練效率  
+在機器學習中，對影像資料進行適當的預處理是提高模型效率的關鍵步驟。這裡將影像的每個像素值進行標準化處理，將範圍壓縮到 [0,1]，以加快模型訓練並提升穩定性。
 
-再將訓練資料切分為訓練集和驗證集，確保模型不會過度擬合  
+```python
+# 壓縮像素值範圍到 [0,1]
+X_train = train.iloc[:, 1:] / 255.0  
+# 提取標籤
+y_train = train['label']            
+# 測試集同樣進行標準化
+X_test = test / 255.0               
 
-X_train_split, X_val, y_train_split, y_val = train_test_split(  
-    X_train, y_train, test_size=0.2, random_state=42  
-    
-然後就是建立我們的模型，這邊是採取Knn的方式，讓他考慮最近的3個鄰居進行投票 
+## 4. 資料集切分
 
+為了確保模型不會過度擬合，需將訓練資料切分為訓練集與驗證集。這樣可以幫助我們評估模型在未見過的數據上的表現，從而提升模型的泛化能力。
+
+```python
+from sklearn.model_selection import train_test_split
+
+X_train_split, X_val, y_train_split, y_val = train_test_split(
+    X_train, y_train, test_size=0.2, random_state=42
+)
+## 5. 模型選擇與訓練
+
+在本次實作中，選用最近鄰居演算法（KNN）進行分類，並將 `k` 設定為 3，讓模型根據最近的 3 個鄰居進行投票以決定分類結果。
+
+```python
 from sklearn.neighbors import KNeighborsClassifier
+
+# 建立 KNN 模型，k=3
 knn = KNeighborsClassifier(n_neighbors=3)
-knn.fit(X_train_split, y_train_split)  
+# 使用訓練集進行模型訓練
+knn.fit(X_train_split, y_train_split)
 
-然後驗證我們的模型，驗證模型在未見過的數據上的表現  
+## 6. 模型驗證
 
-y_val_pred = knn.predict(X_val)  
-accuracy = accuracy_score(y_val, y_val_pred)  
-print(f"準確率: {accuracy:.4f}")  #查看準確率  
+為了評估模型在未見數據上的表現，我們使用驗證集進行準確率的測試。驗證的目的是檢測模型是否過度擬合，並衡量其泛化能力。
 
-確定準確率之後，就可以進行我們的預測~  
+```python
+from sklearn.metrics import accuracy_score
 
-y_test_pred = knn.predict(X_test)  
-submission = pd.DataFrame({  
-    'ImageID': range(1, len(y_test_pred)+1),  
-    'Label': y_test_pred  
-})  
-最後輸出我們的文件 
-submission.to_csv(r'C:\Users\User\OneDrive\桌面\Py\Pandas\digit-recognizer\submission.csv', index=False)  
+# 預測驗證集的標籤
+y_val_pred = knn.predict(X_val)
 
-就完成啦!
+# 計算模型的準確率
+accuracy = accuracy_score(y_val, y_val_pred)
+print(f"準確率: {accuracy:.4f}")
+
+## 7. 模型預測
+
+在確認模型表現穩定後，我們使用測試集進行預測，並將預測結果保存為符合提交格式的 CSV 檔案，供比賽提交使用。
+
+```python
+# 預測測試集標籤
+y_test_pred = knn.predict(X_test)
+
+# 建立提交檔案
+submission = pd.DataFrame({
+    'ImageID': range(1, len(y_test_pred) + 1),
+    'Label': y_test_pred
+})
+
+# 保存提交檔案
+submission.to_csv(
+    r'C:\Users\User\OneDrive\桌面\Py\Pandas\digit-recognizer\submission.csv',
+    index=False
+)
+ 
+## 結果
+
+模型準確率達到 **0.99046%**，這樣就成功完成手寫數字的分類任務啦~  
+
+---
+
+
 
 
 
